@@ -1,15 +1,15 @@
 import pygame
 from sys import exit
 import config
-import components
-import population
+from game.components import Ground, Pipes
+from ai.population import Population
 
 pygame.init()
 clock = pygame.time.Clock()
-population = population.Population(100)
+population = Population(100)
 
 def generate_pipes():
-    config.pipes.append(components.Pipes(config.window_width))
+    config.pipes.append(Pipes(config.window_width))
 
 def quit_game():
     for event in pygame.event.get():

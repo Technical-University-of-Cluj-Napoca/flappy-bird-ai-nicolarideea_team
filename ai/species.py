@@ -17,14 +17,12 @@ class Species:
         return self.threshold > similarity
 
     @staticmethod
-    def weight_difference(brain_1, brain_2):
-        total_weight_difference = 0
-        for i in range(0, len(brain_1.connections)):
-            for j in range(0, len(brain_2.connections)):
-                if i == j:
-                    total_weight_difference += abs(brain_1.connections[i].weight -
-                                                   brain_2.connections[j].weight)
-        return total_weight_difference
+    def weight_difference(b1, b2):
+        total = 0
+        count = min(len(b1.connections), len(b2.connections))
+        for i in range(count):
+            total += abs(b1.connections[i].weight - b2.connections[i].weight)
+        return total / count
 
     def add_to_species(self, player):
         self.players.append(player)
@@ -48,6 +46,9 @@ class Species:
             self.average_fitness = 0
 
     def offspring(self):
-        baby = self.players[random.randint(1, len(self.players)) - 1].clone()
+        if len(self.players) > 1:
+            baby = self.players[random.randint(1, len(self.players)) - 1].clone()
+        else:
+            baby = self.players[0].clone()
         baby.brain.mutate()
         return baby

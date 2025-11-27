@@ -1,5 +1,5 @@
-import node
-import connection
+from ai.node import Node
+from ai.connection import Connection
 import random
 
 class Brain:
@@ -13,20 +13,20 @@ class Brain:
         if not clone:
         # Create input nodes
             for i in range(0, self.inputs):
-                self.nodes.append(node.Node(i))
+                self.nodes.append(Node(i))
                 self.nodes[i].layer = 0
 
             # Create bias node
-            self.nodes.append(node.Node(3))
+            self.nodes.append(Node(3))
             self.nodes[3].layer = 0
 
             # Create output node
-            self.nodes.append(node.Node(4))
+            self.nodes.append(Node(4))
             self.nodes[4].layer = 1
 
             # Create connections
             for i in range(0, 4):
-                self.connections.append(connection.Connection(self.nodes[i],
+                self.connections.append(Connection(self.nodes[i],
                                                               self.nodes[4],
                                                               random.uniform(-1, 1)))
 

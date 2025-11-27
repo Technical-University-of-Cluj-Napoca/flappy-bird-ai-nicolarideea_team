@@ -1,7 +1,8 @@
 import random
 import pygame
 import config
-import brain
+from ai.brain import Brain
+
 
 class Player:
     def __init__(self):
@@ -19,8 +20,10 @@ class Player:
         self.vision = [0.5, 1, 0.5]
         self.fitness = 0
         self.inputs = 3
-        self.brain = brain.Brain(self.inputs)
+        self.brain = Brain(self.inputs)
         self.brain.generate_net()
+
+        self.score = 0
 
     def draw(self, window):
         pygame.draw.rect(window, self.color, self.rect)
@@ -44,10 +47,18 @@ class Player:
             if self.vel > 5:
                 self.vel = 5
             self.lifespan += 1
+
+            self.check_score()
         else:
             self.alive = False
             self.flap = False
             self.vel = 0
+
+    def check_score(self):
+        for p in config.pipes:
+            if not p.passed and p.x + p.width < self.rect.x:
+                p.passed = True
+                self.score += 1
 
     def bird_flap(self):
         if not self.flap and not self.sky_collision():
@@ -58,12 +69,18 @@ class Player:
 
     @staticmethod
     def closest_pipe():
-        for p in config.pipes:
-            if not p.passed:
-                return p
+        unpassed = [p for p in config.pipes if not p.passed]
+        if unpassed:
+            return min(unpassed, key=lambda p: p.x)
+        return None
 
     # AI related functions
     def look(self):
+        closest = self.closest_pipe()
+        if closest:
+            self.vision[0] = max(0, self.rect.center[1] - closest.top_rect.bottom) / 500
+            pygame.draw.line(config.window, self.color, self.rect.center,
+                             (self.rect.center[0], closest.top_rect.bottom))
         if config.pipes:
             # Line to top pipe
             self.vision[0] = max(0, self.rect.center[1] - self.closest_pipe().top_rect.bottom) / 500

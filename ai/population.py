@@ -1,7 +1,7 @@
 import config
-import player
+from ai.player import Player
 import math
-import species
+from ai.species import Species
 import operator
 
 
@@ -12,7 +12,7 @@ class Population:
         self.species = []
         self.size = size
         for i in range(0, self.size):
-            self.players.append(player.Player())
+            self.players.append(Player())
 
     def update_live_players(self):
         for p in self.players:
@@ -53,7 +53,7 @@ class Population:
                     add_to_species = True
                     break
             if not add_to_species:
-                self.species.append(species.Species(p))
+                self.species.append(Species(p))
 
     def calculate_fitness(self):
         for p in self.players:
