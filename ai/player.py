@@ -3,14 +3,13 @@ import pygame
 import config
 from ai.brain import Brain
 
-
 class Player:
     def __init__(self):
         # Bird
         self.x, self.y = 50, 200
         self.rect = pygame.Rect(self.x, self.y, 20, 20)
         self.color = random.randint(100, 255), random.randint(100, 255), random.randint(100, 255)
-        self.vel = 0
+        self.vel = 0 # vertical speed of the bird
         self.flap = False
         self.alive = True
         self.lifespan = 0
@@ -21,7 +20,7 @@ class Player:
         self.fitness = 0
         self.inputs = 3
         self.brain = Brain(self.inputs)
-        self.brain.generate_net()
+        self.brain.generate_net() # initialize the neural network
 
         self.score = 0
 
@@ -47,19 +46,20 @@ class Player:
             if self.vel > 5:
                 self.vel = 5
             self.lifespan += 1
-
             self.check_score()
         else:
             self.alive = False
             self.flap = False
             self.vel = 0
 
+    # check if the bird passed a pipe
     def check_score(self):
         for p in config.pipes:
             if not p.passed and p.x + p.width < self.rect.x:
                 p.passed = True
                 self.score += 1
 
+    # make the bird move upward
     def bird_flap(self):
         if not self.flap and not self.sky_collision():
             self.flap = True
@@ -67,6 +67,7 @@ class Player:
         if self.vel >= 3:
             self.flap = False
 
+    # find the pipe with the smallest x coordinate that hasn't been passed
     @staticmethod
     def closest_pipe():
         unpassed = [p for p in config.pipes if not p.passed]
@@ -97,6 +98,7 @@ class Player:
             pygame.draw.line(config.window, self.color, self.rect.center,
                              (self.rect.center[0], config.pipes[0].bottom_rect.top))
 
+    # send vision to neural network
     def think(self):
         self.decision = self.brain.feed_forward(self.vision)
         if self.decision > 0.73:

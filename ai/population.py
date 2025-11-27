@@ -17,8 +17,8 @@ class Population:
     def update_live_players(self):
         for p in self.players:
             if p.alive:
-                p.look()
-                p.think()
+                p.look() # bird looks at the environment
+                p.think() # it feeds vision to the brain and makes a decision
                 p.draw(config.window)
                 p.update(config.ground)
 
@@ -41,6 +41,7 @@ class Population:
         print('CHILDREN FOR NEXT GEN')
         self.next_gen()
 
+    # assign each player to a species
     def speciate(self):
         for s in self.species:
             s.players = []
@@ -52,15 +53,17 @@ class Population:
                     s.add_to_species(p)
                     add_to_species = True
                     break
-            if not add_to_species:
+            if not add_to_species: # if no similarity found, create new species
                 self.species.append(Species(p))
 
+    # run fitness function on all players and udate species averages
     def calculate_fitness(self):
         for p in self.players:
             p.calculate_fitness()
         for s in self.species:
             s.calculate_average_fitness()
 
+    # remove species that don't have any members left
     def kill_extinct_species(self):
         species_bin = []
         for s in self.species:
@@ -69,6 +72,7 @@ class Population:
         for s in species_bin:
             self.species.remove(s)
 
+    # if a species has not improved in 8 generations we remove it
     def kill_stale_species(self):
         player_bin = []
         species_bin = []
@@ -85,16 +89,19 @@ class Population:
         for s in species_bin:
             self.species.remove(s)
 
+    # sort species by bets members
     def sort_species_by_fitness(self):
         for s in self.species:
             s.sort_players_by_fitness()
 
         self.species.sort(key=operator.attrgetter('benchmark_fitness'), reverse=True)
 
+    # build the next generation
     def next_gen(self):
         children = []
 
         # Clone of champion is added to each species
+        # best of each species survives
         for s in self.species:
             children.append(s.champion.clone())
 
@@ -104,6 +111,7 @@ class Population:
             for i in range(0, children_per_species):
                 children.append(s.offspring())
 
+        # fill any missing slots with children of the best species
         while len(children) < self.size:
             children.append(self.species[0].offspring())
 
