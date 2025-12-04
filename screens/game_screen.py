@@ -72,8 +72,9 @@ class GameScreen:
         if self.mode == "manual":
             self.player.draw(self.screen)
         else:
-            self.population.draw_live_players(self.screen)
-
+            for p in self.population.players:
+                if p.alive:
+                    p.draw(self.screen)
         self.draw_score()
 
 
@@ -98,16 +99,21 @@ class GameScreen:
 
     def update_score(self):
 
-        if self.mode != "manual":
-            return
+        if self.mode == "auto":
+            if not self.population.players:
+                return
 
-        for pipe in config.pipes:
-            pipe_right = pipe.x + pipe.bottom_rect.width
+            best = max(self.population.players, key=lambda p: p.score)
+            self.score = best.score
 
-            if pipe_right < self.player.rect.left and not pipe.scored:
-                self.score += 1
-                pipe.scored = True
-                SoundManager.play_score()
+        if self.mode == "manual":
+            for pipe in config.pipes:
+                pipe_right = pipe.x + pipe.bottom_rect.width
+
+                if pipe_right < self.player.rect.left and not pipe.scored:
+                    self.score += 1
+                    pipe.scored = True
+                    SoundManager.play_score()
 
     def draw_score(self):
 
@@ -147,6 +153,8 @@ class GameScreen:
             if not self.population.extinct():
                 self.population.update_live_players()
             else:
+                best = max(self.population.players, key=lambda p: p.score)
+                HighscoreManager.save_score(best.score, "auto")
                 config.pipes.clear()
                 self.pipes_spawn_timer = 30
                 self.population.natural_selection()

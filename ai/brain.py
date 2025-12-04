@@ -78,7 +78,7 @@ class Brain:
 
         # Clone all connections
         for c in self.connections:
-            clone.connections.append(c.clone(clone.get_node(c.from_node.id), clone.getNode(c.to_node.id)))
+            clone.connections.append(c.clone(clone.get_node(c.from_node.id), clone.get_node(c.to_node.id)))
 
         clone.layers = self.layers
         clone.connect_nodes()

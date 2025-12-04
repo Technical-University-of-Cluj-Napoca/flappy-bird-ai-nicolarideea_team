@@ -7,9 +7,22 @@ class Player:
     def __init__(self):
         # Bird
         self.x, self.y = 50, 200
-        self.rect = pygame.Rect(self.x, self.y, 20, 20)
-        self.color = random.randint(100, 255), random.randint(100, 255), random.randint(100, 255)
-        self.vel = 0 # vertical speed of the bird
+        self.color = (255, 255, 0)
+
+        self.frames = [
+            pygame.image.load("assets/bird1.png").convert_alpha(),
+            pygame.image.load("assets/bird2.png").convert_alpha(),
+            pygame.image.load("assets/bird3.png").convert_alpha(),
+        ]
+        self.frame = 0
+        self.frame_timer = 0
+        self.frame_speed = 7
+
+        w = self.frames[0].get_width()
+        h = self.frames[0].get_height()
+        self.rect = pygame.Rect(self.x, self.y, w, h)
+
+        self.vel = 0
         self.flap = False
         self.alive = True
         self.lifespan = 0
@@ -26,23 +39,22 @@ class Player:
 
         self.float_offset = 0
         self.float_direction = 1
-        self.frame = 0
-        self.frame_timer = 0
-        self.frame_speed = 7
 
     def draw(self, window):
-        pygame.draw.rect(window, self.color, self.rect)
+        img = self.frames[self.frame]
+        window.blit(img, self.rect)
 
     def ground_collision(self, ground):
-        return pygame.Rect.colliderect(self.rect, ground)
+        return self.rect.bottom >= ground.y_pos
 
     def sky_collision(self):
-        return bool(self.rect.y < 30)
+        return self.rect.top <= 0
 
     def pipe_collision(self):
         for p in config.pipes:
-            return pygame.Rect.colliderect(self.rect, p.top_rect) or \
-                pygame.Rect.colliderect(self.rect, p.bottom_rect)
+            if self.rect.colliderect(p.top_rect) or self.rect.colliderect(p.bottom_rect):
+                return True
+        return False
 
     def update(self, ground):
         if not (self.ground_collision(ground) or self.pipe_collision()):
@@ -61,7 +73,7 @@ class Player:
     # check if the bird passed a pipe
     def check_score(self):
         for p in config.pipes:
-            if not p.passed and p.x + p.width < self.rect.x:
+            if not p.passed and p.x + p.bottom_rect.width < self.rect.x:
                 p.passed = True
                 self.score += 1
 
@@ -107,7 +119,7 @@ class Player:
     # send vision to neural network
     def think(self):
         self.decision = self.brain.feed_forward(self.vision)
-        if self.decision > 0.73:
+        if self.decision > 0.6:
             self.bird_flap()
 
     def calculate_fitness(self):

@@ -127,3 +127,8 @@ class Population:
             if p.alive:
                 extinct = False
         return extinct
+
+    def draw_live_players(self, screen):
+        for p in self.players:
+            if p.alive:
+                p.draw(screen)
