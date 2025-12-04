@@ -1,5 +1,5 @@
 import pygame
-
+from utils.sound_manager import SoundManager
 
 class ManualPlayer:
     def __init__(self):
@@ -29,7 +29,6 @@ class ManualPlayer:
         self.rect = pygame.Rect(self.x, self.y, w, h)
 
 
-    # IDLE FLOAT (before start)
     def idle_float(self):
         self.float_offset += 0.3 * self.float_direction
         if abs(self.float_offset) > 6:
@@ -41,7 +40,6 @@ class ManualPlayer:
         self.vel += self.gravity
         self.y += self.vel
 
-        # falling speed
         if self.vel > 8:
             self.vel = 8
 
@@ -66,12 +64,11 @@ class ManualPlayer:
         self.rect.width = img.get_width()
         self.rect.height = img.get_height()
 
-
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN or \
            (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):
             self.vel = self.jump_power
-
+            SoundManager.play_flap()
 
     def get_rect(self):
         return self.rect

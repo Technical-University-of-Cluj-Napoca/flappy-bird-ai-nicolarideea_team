@@ -5,6 +5,7 @@ from game.ground import Ground
 from ai.population import Population
 from game.manual_player import ManualPlayer
 from utils.highscore_manager import HighscoreManager
+from utils.sound_manager import SoundManager
 
 class GameScreen:
     def __init__(self, game, mode="manual"):
@@ -106,6 +107,7 @@ class GameScreen:
             if pipe_right < self.player.rect.left and not pipe.scored:
                 self.score += 1
                 pipe.scored = True
+                SoundManager.play_score()
 
     def draw_score(self):
 
@@ -128,6 +130,7 @@ class GameScreen:
             if self.check_collision(self.player):
                 self.game.last_score = self.score
                 HighscoreManager.save_score(self.score, self.mode)
+                SoundManager.play_death()
                 return "game_over"
 
             return None
