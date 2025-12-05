@@ -14,7 +14,7 @@ class GameOverScreen:
         self.load_assets()
         self.create_ui()
 
-        self.font = pygame.font.Font(None, 42)
+        self.font = pygame.font.Font(config.font_path, 42)
         self.medal_img = self.get_medal_for_score(self.score)
 
 
@@ -43,14 +43,12 @@ class GameOverScreen:
         self.panel_rect = self.panel_img.get_rect(center=(center_x, 300))
 
         self.medal_rect = pygame.Rect(0, 0, 90, 90)
-        self.medal_rect.center = (
-            self.panel_rect.left + 75,  # move LEFT
-            self.panel_rect.centery + 5  # move slightly DOWN
-        )
+        self.medal_rect.center = (self.panel_rect.left + 75,  self.panel_rect.centery + 5)
 
         self.restart_rect = self.btn_restart.get_rect(center=(center_x - 100, 500))
         self.highscore_rect = self.btn_highscore.get_rect(center=(center_x + 100, 500))
         self.menu_rect = self.btn_menu.get_rect(center=(center_x, 650))
+
 
     def get_medal_for_score(self, score):
         if score >= 40:
@@ -63,6 +61,7 @@ class GameOverScreen:
             return self.bronze_medal
         else:
             return None
+
 
     def update(self):
         return None
@@ -103,7 +102,7 @@ class GameOverScreen:
                 return "restart"
 
             if self.highscore_rect.collidepoint((mx, my)):
-                return "scores"
+                return "scores_from_game_over"
 
             if self.menu_rect.collidepoint((mx, my)):
                 return "menu"

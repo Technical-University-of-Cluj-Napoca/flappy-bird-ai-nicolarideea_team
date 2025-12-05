@@ -67,10 +67,18 @@ class Game:
             from screens.game_screen import GameScreen
             self.set_screen(GameScreen(self, mode=self.pending_mode))
 
-        # Highscore Screen
         elif action == "scores":
             from screens.scores_screen import ScoresScreen
             self.set_screen(ScoresScreen(self))
+
+        elif action == "scores_from_game_over":
+            from screens.scores_screen import ScoresScreen
+            self.set_screen(ScoresScreen(self, previous_screen="game_over"))
+
+        elif action == "back_to_game_over":
+            from screens.game_over_screen import GameOverScreen
+            self.set_screen(GameOverScreen(self, score=self.last_score))
+
 
 
 def main():

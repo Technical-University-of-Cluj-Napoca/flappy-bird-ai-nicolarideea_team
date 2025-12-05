@@ -2,6 +2,8 @@ import random
 import pygame
 import config
 from ai.brain import Brain
+from utils.sound_manager import SoundManager
+
 
 class Player:
     def __init__(self):
@@ -10,9 +12,9 @@ class Player:
         self.color = (255, 255, 0)
 
         self.frames = [
-            pygame.image.load("assets/bird1.png").convert_alpha(),
-            pygame.image.load("assets/bird2.png").convert_alpha(),
-            pygame.image.load("assets/bird3.png").convert_alpha(),
+            pygame.image.load("assets/cropped_bird1.png").convert_alpha(),
+            pygame.image.load("assets/cropped_bird2.png").convert_alpha(),
+            pygame.image.load("assets/cropped_bird3.png").convert_alpha(),
         ]
         self.frame = 0
         self.frame_timer = 0
@@ -69,19 +71,23 @@ class Player:
             self.alive = False
             self.flap = False
             self.vel = 0
+            SoundManager.play_death()
 
-    # check if the bird passed a pipe
+            # check if the bird passed a pipe
     def check_score(self):
         for p in config.pipes:
             if not p.passed and p.x + p.bottom_rect.width < self.rect.x:
                 p.passed = True
                 self.score += 1
+                SoundManager.play_score()
 
     # make the bird move upward
     def bird_flap(self):
         if not self.flap and not self.sky_collision():
             self.flap = True
             self.vel = -5
+            SoundManager.play_flap()
+
         if self.vel >= 3:
             self.flap = False
 

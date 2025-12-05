@@ -34,6 +34,9 @@ class GameScreen:
         center_x = self.screen.get_width() // 2
         self.get_ready_rect = self.get_ready_img.get_rect(center=(center_x, 250))
 
+        self.back_btn = pygame.image.load("assets/back_btn.png").convert_alpha()
+        self.back_btn_rect = self.back_btn.get_rect(topleft=(10, 10))
+
 
     def update(self):
 
@@ -75,7 +78,11 @@ class GameScreen:
             for p in self.population.players:
                 if p.alive:
                     p.draw(self.screen)
+
         self.draw_score()
+
+        if self.mode == "auto":
+            self.screen.blit(self.back_btn, self.back_btn_rect)
 
 
     def spawn_pipes(self):
@@ -120,7 +127,7 @@ class GameScreen:
         if not self.started:
             return
 
-        font = pygame.font.Font(None, 56)
+        font = pygame.font.Font(config.font_path, 56)
         score_surface = font.render(str(self.score), True, (255, 255, 255))
         score_rect = score_surface.get_rect(center=(config.window_width // 2, 60))
         self.screen.blit(score_surface, score_rect)
@@ -175,6 +182,11 @@ class GameScreen:
 
 
     def handle_event(self, event):
+        if self.mode == "auto" and event.type == pygame.MOUSEBUTTONDOWN:
+            mx, my = event.pos
+            if self.back_btn_rect.collidepoint((mx, my)):
+                return "menu"
+
         if not self.started:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 self.started = True

@@ -7,3 +7,5 @@ window = pygame.display.set_mode((window_width, window_height))
 
 ground = Ground(window_width)
 pipes = []
+
+font_path = "assets/ByteBounce.ttf"

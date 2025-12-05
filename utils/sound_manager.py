@@ -20,14 +20,14 @@ class SoundManager:
     @staticmethod
     def play_flap():
         SoundManager.load()
-        SoundManager.flap.play()
+        SoundManager.flap.play(maxtime=120)
 
     @staticmethod
     def play_score():
         SoundManager.load()
-        SoundManager.score.play()
+        SoundManager.score.play(maxtime=150)
 
     @staticmethod
     def play_death():
         SoundManager.load()
-        SoundManager.death.play()
+        SoundManager.death.play(maxtime=250)
