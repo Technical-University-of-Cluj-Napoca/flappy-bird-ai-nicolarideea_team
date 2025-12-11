@@ -14,6 +14,9 @@ class GameScreen:
         self.screen = game.screen
         self.mode = mode
         self.score = 0
+        self.best_ai_score = 0
+        self.highest_ai_score = HighscoreManager.get_best_score("auto")
+        self.highest_manual_score = HighscoreManager.get_best_score("manual")
 
         config.pipes.clear()
         config.ground = Ground(config.window_width)
@@ -39,6 +42,9 @@ class GameScreen:
 
 
     def update(self):
+
+        base_speed = 2
+        Pipes.SPEED = base_speed + (self.score * 0.1)
 
         if not self.started:
 
@@ -84,12 +90,28 @@ class GameScreen:
         if self.mode == "auto":
             self.screen.blit(self.back_btn, self.back_btn_rect)
 
+        if self.mode == "auto":
+            font = pygame.font.Font("assets/ByteBounce.ttf", 32)
+            gen_text = font.render(f"Generation: {self.population.generation}", True, (255, 255, 255))
+            ground_y = config.ground.y_pos + 50
+            self.screen.blit(gen_text, (20, ground_y + 10))
+            best_text = font.render(f"Best: {self.best_ai_score}", True, (255, 255, 255))
+            self.screen.blit(best_text, (20, ground_y + 30))
+            highest_text = font.render(f"Highest: {self.highest_ai_score}", True, (255, 255, 255))
+            self.screen.blit(highest_text, (20, ground_y + 50))
+
+        if self.mode == "manual":
+            font = pygame.font.Font("assets/ByteBounce.ttf", 32)
+            ground_y = config.ground.y_pos + 50
+            highest_manual_text = font.render(f"Highest: {self.highest_manual_score}", True, (255, 255, 255))
+            self.screen.blit(highest_manual_text, (20, ground_y + 10))
 
     def spawn_pipes(self):
 
         if self.pipes_spawn_timer <= 0:
             config.pipes.append(Pipes(config.window_width))
-            self.pipes_spawn_timer = 120
+            #self.pipes_spawn_timer = 120
+            self.pipes_spawn_timer = max(40, 120 - self.score * 2)
         else:
             self.pipes_spawn_timer -= 1
 
@@ -161,10 +183,15 @@ class GameScreen:
                 self.population.update_live_players()
             else:
                 best = max(self.population.players, key=lambda p: p.score)
+                if best.score > self.best_ai_score:
+                    self.best_ai_score = best.score
+                if best.score > self.highest_ai_score:
+                    self.highest_ai_score = best.score
                 HighscoreManager.save_score(best.score, "auto")
                 config.pipes.clear()
                 self.pipes_spawn_timer = 30
                 self.population.natural_selection()
+
 
 
     def check_collision(self, bird):

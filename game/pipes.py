@@ -4,7 +4,7 @@ import config
 
 
 class Pipes:
-    GAP = 200
+    GAP = 150
     SPEED = 2
 
     def __init__(self, window_width):

@@ -6,8 +6,8 @@ class ManualPlayer:
         self.x = 80
         self.y = 320
         self.vel = 0
-        self.gravity = 0.4
-        self.jump_power = -7
+        self.gravity = 0.37
+        self.jump_power = -7.5
 
         self.frame = 0
         self.frame_timer = 0
